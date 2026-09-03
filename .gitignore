@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Local cache and tooling
+my_cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+
+# Development scratch files
+scratch/
