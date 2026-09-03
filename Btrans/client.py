@@ -1,4 +1,4 @@
-"""Low-level Bing Translator HTTP client."""
+"""Bing Translator 低层 HTTP 客户端。"""
 
 from __future__ import annotations
 
@@ -10,6 +10,12 @@ from dataclasses import dataclass
 import brotli
 import requests
 
+from Btrans.exceptions import (
+    InvalidParameterResponse,
+    ResponseParseError,
+    TranslationClientError,
+    TranslationRequestError,
+)
 from Btrans.params import API_BASE, HOME_URL, USER_AGENT, ParamProvider
 
 POST_HEADERS = {
@@ -25,32 +31,16 @@ POST_HEADERS = {
 DEFAULT_TIMEOUT = 20.0
 
 
-class TranslationClientError(RuntimeError):
-    """Base error raised by the low-level translation client."""
-
-
-class InvalidParameterResponse(TranslationClientError):
-    """Server rejected the current dynamic parameters (HTTP 205/400)."""
-
-
-class TranslationRequestError(TranslationClientError):
-    """HTTP request failed or returned an unexpected status code."""
-
-
-class ResponseParseError(TranslationClientError):
-    """Response body could not be decoded or parsed as translation JSON."""
-
-
 @dataclass(frozen=True, slots=True)
 class TranslationResult:
-    """Normalized result extracted from the Bing JSON response."""
+    """从 Bing JSON 响应中提取出的结果。"""
 
     text: str
     detected_language: str | None = None
 
 
 def decompress_content(data: bytes, content_encoding: str | None) -> bytes:
-    """Decode HTTP content manually so br/gzip behavior does not depend on requests internals."""
+    """手动解码 HTTP 内容，使 br 处理不依赖 requests 内部实现。"""
 
     encoding = (content_encoding or "").strip().lower()
     if not encoding:
@@ -77,7 +67,7 @@ def decompress_content(data: bytes, content_encoding: str | None) -> bytes:
 
 
 class TranslationClient:
-    """Sends one translation POST using parameters from a shared ParamProvider."""
+    """使用共享 ParamProvider 提供的参数发送一次翻译 POST 请求。"""
 
     def __init__(
         self,

@@ -1,4 +1,4 @@
-"""Dynamic parameter extraction for the Bing Translator web endpoint."""
+"""动态获取 Bing Translator 网页参数。"""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from typing import Final
 
 import requests
+
+from Btrans.exceptions import ParamExtractionError
 
 HOME_URL: Final = "https://cn.bing.com/translator"
 API_BASE: Final = "https://cn.bing.com"
@@ -37,13 +39,9 @@ _RICH_RE = re.compile(
 )
 
 
-class ParamExtractionError(RuntimeError):
-    """Raised when the Bing homepage does not expose the expected fields."""
-
-
 @dataclass(frozen=True, slots=True)
 class BingPageParams:
-    """One set of dynamic page parameters plus the moment it was fetched."""
+    """一组动态页面参数及抓取时间。"""
 
     ig: str
     token: str
@@ -102,7 +100,7 @@ class BingPageParams:
 
 
 class ParamProvider:
-    """Fetches the Bing homepage and caches valid dynamic parameters."""
+    """抓取 Bing 首页并缓存当前有效的动态参数。"""
 
     def __init__(
         self,
@@ -119,7 +117,7 @@ class ParamProvider:
 
     @property
     def session(self) -> requests.Session:
-        """Session used for both homepage and later translation requests."""
+        """同时用于首页抓取和后续翻译请求的 Session。"""
 
         return self._session
 
