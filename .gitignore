@@ -13,3 +13,6 @@ my_cache/
 
 # Development scratch files
 scratch/
+
+# Internal handoff notes
+PROGRESS.md
